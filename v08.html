@@ -12,27 +12,73 @@
                       border-color: white;
                       color:yellow;
                       vertical-align: top;}
+        .sevenSegmentTable {color: white; border-color: white;                                                     border: solid; border-collapse:collapse;}
+        .notsevenSegmentTable {border:none;}
+        .horizontal           {width:40px; height: 10px;}
+        .vertical             {width:10px; height: 40px;}
+        .red                  {background-color:red;}
+        .black                {background-color:black;}
+        .corner               {width: 10px; height: 10px;}
+        .middle               {width: 10px; height: 10px;}
 </style>
+    <body> 
+            <h2>Version 8 Adding SSD functionality </h2>
+    <table class="standardTable">
+        <tr>
+            <td class="blackbox"><h3>Keypad</h3> 
+            <button type="1" onclick="var b">1</button>
+            <button type="button"onclick="display(2)">2</button>
+            <button type="button"onclick="display(3)">3</button>
+            <button type="button"onclick="display(4)">4</button>
+            <button type="button"onclick="display(5)">5</button>
+            <button type="button"onclick="display(6)">6</button>
+            <button type="button"onclick="display(7)">7</button>
+            <button type="button"onclick="display(8)">8</button>
+            <button type="button"onclick="display(9)">9</button>
+            <button type="button"onclick="display(0)">0</button>
+            </td>
+            <td class="blackbox">
+                <h3>Decimal to Binary</h3>
+                <p id="decimal_input">???</p>
+                <p id="binary_output">???</p>
+            </td>
+            <td class="blackbox">
+                <h3>Binary to SSD Signals</h3> 
+                <p id="ssd_input"></p>
+                <p id="ssd_output"></p>
+            </td>
+            <td class="blackbox">
+                <h3>Illuminate Segements</h3>
+                <p id="segmenets_input"></p>
+                <p id="segmenets_output"></p>
+            </td>
+                <table>
+                </table>
+        <tr>
+
+              </tr> 
+    </body>
+     
 <script>
     function display(number) {
         //for now just display the number in a <p> element
     document.getElementById("decimal_input").innerHTML=number
-    var bcd = dec2bin(number)
+    var bcd = dec2bcd(number)
     document.getElementById("binary_output").innerHTML=bcd
-        
+    
     //send binary number to function bin2ssd()
-    document.getElementById("bin2ssd_input").innerHTML=bin
-    var ssd = din2ssd(bin)
-    document.getElementById("bin2ssd_output").innerHTML=ssd
-        
-    //send ssd signals to illuminate_segments()
-    document.getElementById("illuminate_input").innerHTML=ssd
+    document.getElementById("ssd_input").innerHTML = bcd
+    var ssd = bcd2ssd(b)
+    document.getElementById("ssd_output").innerHTML=ssd
+   
+    //send ssd signals to function illuminate_segments()
+    document.getElementById("segmenets_input").innerHTML=ssd
     illuminate (ssd)
-    document.getElementById("illuminate_output").innerHTML='done'
+    document.getElementById("segmenets_output").innerHTML=ssd
        
     }
     
-    function bin2ssd(binary) {
+    function bcd2ssd(binary) {
         //convert the four bit input string into w,x,y,z variables
         var w = false //set them all to false at first then change if input is '1'
         var x = false
@@ -43,17 +89,17 @@
         if (binary[2] == '1') {y = true}
         if (binary[3] == '1') {z = true}
         //"compute" the value of logical expression for each segment
-        //our expression fo A was ~wxyz+ w~x~y + ~x~y~z + ~wy
+        //our expression for A was ~wxyz+ w~x~y + ~x~y~z + ~wy
         var a = !w&x&z || w&!x&!y || !x&!y&!z || !w&y
         //the remainder of the expression is left as an excercise
-        var b = false
-        var c = false
-        var d = false 
-        var e = false 
-        var f = false 
-        var g = false    
+        var b = !w&!x&!y || !w&y&z || !x&!y&!z || !w&x&!y&!z || w&!x&!y&z
+        var c = !w&!x&!y || !w&!x&y || !w&x&!y || !w&x&y&!z || !x&!y&!z
+        var d = !w&!x&y || w&!x&y || !w&x&y&z
+        var e = w&x&y&!z || w&!x&y&!z || !w&x&y&z
+        var f = w&x&!y&!z || w&!x&y || !w&x&y 
+        var g = w&x&y&!z || w&x&!y || w&!x&y || !w&x&y   
         //assemble and return the output
-         //we will build up the output string element by element
+        //we will build up the output string element by element
         var output = ''
         if (a) {output = output + '1'} else {output = output + '0'}
         if (b) {output = output + '1'} else {output = output + '0'}
@@ -64,11 +110,60 @@
         if (g) {output = output + '1'} else {output = output + '0'}
         return (output) //inital default just illuminates segement A
     }
-    function illuminate (){
-        
+    function illuminate(signals){
+           document.getElementById ("segments0"). innerHTML = 'signals'
+        if (signals [0] == '1'){
+            document.getElementById ("segmentA"). innerHTML = 'ON'
+            document.getElementById ("segmentA").setAttribute = ("class",
+                "red")}
+        else {document.getElementById ("segmentA"). innerHTML = 'OFF'
+            document.getElementById ("segmentA").setAttribute = ("class",
+                "black")}  
+        if (signals [1] == '1'){
+             document.getElementById ("segmentB"). innerHTML = 'ON'
+            document.getElementById ("segmentB").setAttribute = ("class",
+                "red")}
+        else {document.getElementById ("segmentB"). innerHTML = 'OFF'
+            document.getElementById ("segmentB").setAttribute = ("class",
+                "black")}
+        if (signals [2] == '1') { 
+            document.getElementById ("segmentC"). innerHTML = 'ON'
+            document.getElementById ("segmentC").setAttribute = ("class",
+                "red")}
+        else {document.getElementById ("segmentC"). innerHTML = 'OFF'
+            document.getElementById ("segmentC").setAttribute = ("class",
+                "black")}
+        if (signals [3] == '1'){
+            document.getElementById ("segmentD"). innerHTML = 'ON'
+            document.getElementById ("segmentD").setAttribute = ("class",
+                "red")}
+        else {document.getElementById ("segmentD"). innerHTML = 'OFF'
+            document.getElementById ("segmentD").setAttribute = ("class",
+                "black")}
+        if (signals [4] == '1'){
+            document.getElementById ("segmentE"). innerHTML = 'ON'
+            document.getElementById ("segmentE").setAttribute = ("class",
+                "red")}
+        else {document.getElementById ("segmentE"). innerHTML = 'OFF'
+            document.getElementById ("segmentE").setAttribute = ("class",
+                "black")}
+        if (signals [5] == '1') {
+            document.getElementById ("segmentF"). innerHTML = 'ON'
+            document.getElementById ("segmentF").setAttribute = ("class",
+                "red")}
+        else {document.getElementById ("segmentF"). innerHTML = 'OFF'
+            document.getElementById ("segmentF").setAttribute = ("class",
+                "black")}
+        if (signals [6] == '1'){ 
+            document.getElementById ("segmentG"). innerHTML = 'ON'
+            document.getElementById ("segmentG").setAttribute = ("class",
+                "red")}
+        else {document.getElementById ("segmentG"). innerHTML = 'OFF'
+              document.getElementById ("segmentG").setAttribute = ("class",
+                "black")}
     }
-    
-    function dec2bin(decimal) {
+        
+    function dec2bcd (decimal) {
         //first refinement: lazy lazy way of finding binary
         //version of decimal input - we just look it up in a
         //list
@@ -78,7 +173,7 @@
     return(binary[decimal])
         
     }
-    function dec2bin2 (decimal) {
+    function dec2bcd2 (decimal) {
         var quotient= decimal
         var output = '' 
         while (quotient > 0) {
@@ -102,41 +197,9 @@
         //called length - it just reports the length of the
         //string
         while (output.length <4) {output ='0'+ output}
-        return(output)
+        return("100000")
     }
     
     </script>
    </head>
-  <body>
-    <h2>Version 8 Adding BIN2SSD Functionality</h2>
-    <table class="standardTable">
-        <tr>
-            <td class="blackbox"><h3>Keypad</h3> 
-            <button type="button" onclick="display(1)">1</button>
-            <button type="button"onclick="display(2)">2</button>
-            <button type="button"onclick="display(3)">3</button>
-            <button type="button"onclick="display(4)">4</button>
-            <button type="button"onclick="display(5)">5</button>
-            <button type="button"onclick="display(6)">6</button>
-            <button type="button"onclick="display(7)">7</button>
-            <button type="button"onclick="display(8)">8</button>
-            <button type="button"onclick="display(9)">9</button>
-            <button type="button"onclick="display(0)">0</button>
-            </td>
-            <td class="blackbox"><h3>Decimal to Binary</h3>
-            <p id="decimal_input">???</p>
-            <p id="binary_output">???</p></td>
-        
-            <td class="blackbox"><h3>Binary to SSD</h3> 
-                <p id="binary2ssd_input"></p>
-                <p id="binary2ssd_output"></p>
-            </td>
-        
-            <td class="blackbox"><h3>Illuminate Segements</h3>
-                <p id="illuminate_input"></p>
-                <p id="illuminate_output"></p>
-            </td>
-        </tr>
-    </table>
-</body>
 </html>
