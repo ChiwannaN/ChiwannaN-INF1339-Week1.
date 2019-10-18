@@ -12,35 +12,100 @@
                       border-color: white;
                       color:yellow;
                       vertical-align: top;}
-        .sevenSegmentTable {color: white; border-color: white;                                                     border: solid; border-collapse:collapse;}
+        .sevenSegmentTable {color: white; 
+                            border-color: white;                                               border: solid; 
+                            border-collapse:collapse;}
         .notsevenSegmentTable {border:none;}
         .horizontal           {width:40px; height: 10px;}
         .vertical             {width:10px; height: 40px;}
         .red                  {background-color:red;}
-        .black                {background-color:black;}
         .corner               {width: 10px; height: 10px;}
-        .middle               {width: 10px; height: 10px;}
+        .middle               {width: 40px; height: 40px;}
 </style>
+     <body>
+    <h2>Version 9 </h2>
+    <table class="standardTable">
+        <tr>
+            <td class="blackbox"><h3>Keypad</h3> 
+            <button type="1" onclick="var b">1</button>
+            <button type="button"onclick="display(2)">2</button>
+            <button type="button"onclick="display(3)">3</button>
+            <button type="button"onclick="display(4)">4</button>
+            <button type="button"onclick="display(5)">5</button>
+            <button type="button"onclick="display(6)">6</button>
+            <button type="button"onclick="display(7)">7</button>
+            <button type="button"onclick="display(8)">8</button>
+            <button type="button"onclick="display(9)">9</button>
+            <button type="button"onclick="display(0)">0</button>
+            </td>
+            <td class="blackbox">
+                <h3>Decimal to Binary</h3>
+                <p id="decimal_input">???</p>
+                <p id="binary_output">???</p>
+            </td>
+            <td class="blackbox">
+                <h3>Binary to SSD Signals</h3> 
+                <p id="ssd_input"></p>
+                <p id="ssd_output"></p>
+            </td>
+            <td class="blackbox">
+                <h3>Illuminate Segements</h3>
+                <p id="segmenets_input"></p>
+                <p id="segmenets_output"></p>
+                <table>
+                    <tr>  
+         <td class="notsevenSegmentTable corner"></td>
+         <td id= "segmentA" class="sevenSegmentTable horizontal">A</td>
+         <td class="notsevenSegmentTable corner"></td>
+          </tr>
+          <tr>
+         <td id= "segmentF" class="sevenSegmentTable verticle">F</td>
+         <td class="notsevenSegmentTable middle"></td>
+         <td id= "segmentB" class="sevenSegmentTable verticle">B</td>
+        </tr> 
+          <tr>
+         <td class="notsevenSegmentTable corner"></td>
+         <td id= "segmentG" class="sevenSegmentTable horizontal">G</td>
+         <td class="notsevenSegmentTable corner"></td>
+              </tr> 
+          <tr>
+         <td id= "segmentE"
+             class="sevenSegmentTable verticle">E</td>
+         <td class="notsevenSegmentTable middle"></td>
+         <td id= "segmentC"
+             class="sevenSegmentTable verticle">C</td>
+              </tr> 
+          <tr>
+         <td class="notsevenSegmentTable corner">1</td>
+         <td id= "segmentD"
+             class="sevenSegmentTable horizontal">D</td>
+         <td class="notsevenSegmentTable corner"></td></table>
+                  </tr>
+    </table>
+        <tr>
+
+              </tr> 
+</body>
 <script>
     function display(number) {
         //for now just display the number in a <p> element
-    document.getElementById("decimal_input").innerHTML=number
-    var bcd = dec2bin(number)
-    document.getElementById("binary_output").innerHTML=bcd
+    document.getElementById("decimal_input").innerHTML= number
+    var bcd = dec2bcd(number)
+    document.getElementById("binary_output").innerHTML= bcd
     
     //send binary number to function bin2ssd()
-    document.getElementById("bin2ssd_input").innerHTML=bin
-    var ssd = din2ssd(bin)
-    document.getElementById("bin2ssd_output").innerHTML=ssd
+    document.getElementById("ssd_input").innerHTML= bcd
+    var ssd = bcd2ssd(bcd)
+    document.getElementById("ssd_output").innerHTML= ssd
    
     //send ssd signals to function illuminate_segments()
-    document.getElementById("illuminate_input").innerHTML=ssd
-    illuminate (ssd)
-    document.getElementById("illuminate_output").innerHTML='done'
+    document.getElementById("segmenets_input").innerHTML= ssd
+    var ssd = illuminate (signals)
+    document.getElementById("segmenets_output").innerHTML= ssd
        
     }
     
-    function bin2ssd(binary) {
+    function bcd2ssd(binary) {
         //convert the four bit input string into w,x,y,z variables
         var w = false //set them all to false at first then change if input is '1'
         var x = false
@@ -54,12 +119,12 @@
         //our expression for A was ~wxyz+ w~x~y + ~x~y~z + ~wy
         var a = !w&x&z || w&!x&!y || !x&!y&!z || !w&y
         //the remainder of the expression is left as an excercise
-        var b = false
-        var c = false
-        var d = false 
-        var e = false 
-        var f = false 
-        var g = false    
+        var b = !w&!x&!y || !w&y&z || !x&!y&!z || !w&x&!y&!z || w&!x&!y&z
+        var c = !w&!x&!y || !w&!x&y || !w&x&!y || !w&x&y&!z || !x&!y&!z
+        var d = !w&!x&y || w&!x&y || !w&x&y&z
+        var e = w&x&y&!z || w&!x&y&!z || !w&x&y&z
+        var f = w&x&!y&!z || w&!x&y || !w&x&y 
+        var g = w&x&y&!z || w&x&!y || w&!x&y || !w&x&y   
         //assemble and return the output
         //we will build up the output string element by element
         var output = ''
@@ -125,7 +190,7 @@
                 "black")}
     }
         
-    function dec2bin(decimal) {
+    function dec2bcd (decimal) {
         //first refinement: lazy lazy way of finding binary
         //version of decimal input - we just look it up in a
         //list
@@ -135,7 +200,7 @@
     return(binary[decimal])
         
     }
-    function dec2bin2 (decimal) {
+    function dec2bcd2 (decimal) {
         var quotient= decimal
         var output = '' 
         while (quotient > 0) {
@@ -164,75 +229,4 @@
     
     </script>
    </head>
-  <body>
-    <h2>Version 9 </h2>
-    <table class="standardTable">
-        <tr>
-            <td class="blackbox"><h3>Keypad</h3> 
-            <button type="button" onclick="display(1)">1</button>
-            <button type="button"onclick="display(2)">2</button>
-            <button type="button"onclick="display(3)">3</button>
-            <button type="button"onclick="display(4)">4</button>
-            <button type="button"onclick="display(5)">5</button>
-            <button type="button"onclick="display(6)">6</button>
-            <button type="button"onclick="display(7)">7</button>
-            <button type="button"onclick="display(8)">8</button>
-            <button type="button"onclick="display(9)">9</button>
-            <button type="button"onclick="display(0)">0</button>
-            </td>
-            <td class="blackbox">
-                <h3>Decimal to Binary</h3>
-                <p id="decimal_input">???</p>
-                <p id="binary_output">???</p>
-            </td>
-            <td class="blackbox">
-                <h3>Binary to SSD Signals</h3> 
-                <p id="ssd_input"></p>
-                <p id="ssd_output"></p>
-            </td>
-            <td class="blackbox">
-                <h3>Illuminate Segements</h3>
-                <p id="segmenets_input"></p>
-                <p id="segmenets_output"></p>
-                <table>
-                    <tr>  
-         <td class="notsevenSegmentTable corner">1</td>
-         <td id= "segmentA" class="sevenSegmentTable
-        horizontal">A</td>
-         <td class="notsevenSegmentTable corner">3</td>
-          </tr>
- 
-          <tr>
-         <td id= "segmentF" class="sevenSegmentTable
-         verticle">F</td>
-         <td class="notsevenSegmentTable middle">2</td>
-         <td id= "segmentB" class="sevenSegmentTable
-         verticle">B</td>
-        </tr> 
-          <tr>
-         <td class="notsevenSegmentTable corner">1</td>
-         <td id= "segmentG" class="sevenSegmentTable
-         horizontal">G</td>
-         <td class="notsevenSegmentTable corner">3</td>
-              </tr> 
-          <tr>
-         <td id= "segmentE"
-             class="sevenSegmentTable verticle">E</td>
-         <td class="notsevenSegmentTable middle">2</td>
-         <td id= "segmentC"
-             class="sevenSegmentTable verticle">C</td>
-              </tr> 
-          <tr>
-         <td class="notsevenSegmentTable corner">1</td>
-         <td id= "segmentD"
-             class="sevenSegmentTable horizontal">D</td>
-         <td class="notsevenSegmentTable corner">3</td></table>
-                  </tr>
-    </table>
-        <tr>
-
-              </tr> 
-      
-      
-</body>
 </html>
